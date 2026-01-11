@@ -12,10 +12,26 @@ const cookieParser = require('cookie-parser');
 
 const fooditemRoutes=require('../routes/fooditem.routes');
 
-app.use(cors({
-    origin: 'http://localhost:5173',
+
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://spiceup-1-1.onrender.com"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
     credentials: true,
-}));
+  })
+);
 
 
 app.use(express.json());
