@@ -1,29 +1,29 @@
-const express=require('express');
-const path = require('path');
-const app=express();
-const authRoutes=require('../routes/auth.routes');
-const cors = require('cors');
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
-const cookieParser = require('cookie-parser');
+const authRoutes = require("../routes/auth.routes");
+const fooditemRoutes = require("../routes/fooditem.routes");
 
+const app = express();
 
-
-
-
-const fooditemRoutes=require('../routes/fooditem.routes');
-
-
-
+/* =========================
+   CORS CONFIG (FINAL)
+========================= */
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://spiceup-1-1.onrender.com"
+  "https://spiceup-1-1.onrender.com",
 ];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+    origin: (origin, callback) => {
+      // allow requests with no origin (Postman, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("CORS not allowed"));
@@ -33,21 +33,24 @@ app.use(
   })
 );
 
-
+/* =========================
+   MIDDLEWARES
+========================= */
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve uploaded files
+/* =========================
+   STATIC FILES
+========================= */
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
+/* =========================
+   ROUTES
+========================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/food", fooditemRoutes);
 
-
-
-
-
-
-
-
-module.exports=app;
+/* =========================
+   EXPORT
+========================= */
+module.exports = app;
